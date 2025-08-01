@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tomato Leaf Disease Prediction</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Use the Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for the file input on hover */
+        .file-drop-area:hover {
+            border-color: #4ade80; /* green-400 */
+            background-color: #f0fdf4; /* green-50 */
+        }
+        /* Style for the result image */
+        .result-img {
+            max-height: 300px;
+            width: auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body class="bg-green-50 text-gray-800 antialiased">
+
+    <div class="container mx-auto px-4 py-8 md:py-12">
+        <div class="max-w-2xl mx-auto text-center">
+            
+            <!-- Leaf Icon -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-green-500 mb-4">
+                <path d="M11 20A7 7 0 0 1 4 13V8a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H6a1 1 0 0 0-1 1v3a5 5 0 0 0 5 5h1a1 1 0 0 1 1-1v-2a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1V9a1 1 0 0 1-1-1H4"/>
+                <path d="M18 8a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1"/>
+            </svg>
+            
+            <!-- Main Title -->
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900">
+                Tomato Leaf Disease Prediction
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="mt-4 text-md md:text-lg text-gray-600">
+                Upload an image of a tomato leaf and our AI will analyze it to detect potential diseases and provide confidence scores for accurate diagnosis.
+            </p>
+        </div>
+
+        <!-- Main Content Card -->
+        <div class="mt-8 max-w-2xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="p-6 md:p-8">
+                <form id="upload-form" method="POST" action="/predict" enctype="multipart/form-data">
+                    
+                    <!-- File Upload Area -->
+                    <label for="file-upload" class="file-drop-area flex flex-col items-center justify-center w-full h-64 border-2 border-green-300 border-dashed rounded-xl cursor-pointer transition-colors duration-300">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <svg class="w-10 h-10 mb-4 text-green-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500"><span class="font-semibold text-green-600">Click to upload</span> or drag and drop</p>
+                            <p class="text-xs text-gray-500">Supports JPG, JPEG, PNG files</p>
+                        </div>
+                        <input id="file-upload" name="file" type="file" class="hidden" required onchange="document.getElementById('upload-form').submit();" />
+                    </label>
+                    
+                    <!-- The submit button is hidden, as the form submits automatically on file selection. 
+                         You could add a visible button if you remove the onchange event from the input. -->
+                    <input type="submit" value="Predict" class="hidden">
+                </form>
+
+                <!-- Prediction Result Section (This will be shown by your backend) -->
+                {% if prediction %}
+                <div class="mt-8 pt-6 border-t border-gray-200 text-center">
+                    <h2 class="text-2xl font-semibold text-gray-800">Prediction Result</h2>
+                    
+                    <div class="mt-6 bg-gray-50 rounded-xl p-6 inline-block">
+                        <p class="text-lg">
+                            <span class="font-medium text-gray-600">Disease:</span>
+                            <span class="font-bold text-xl text-green-700">{{ prediction }}</span>
+                        </p>
+                        <p class="text-lg mt-2">
+                            <span class="font-medium text-gray-600">Confidence:</span>
+                            <span class="font-bold text-xl text-green-700">{{ confidence }}%</span>
+                        </p>
+                    </div>
+                    
+                    <div class="mt-6">
+                        <h3 class="text-lg font-medium text-gray-600 mb-4">Uploaded Image:</h3>
+                        <img src="{{ img_path }}" alt="Uploaded Tomato Leaf" class="result-img mx-auto">
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="text-center mt-8 text-sm text-gray-500">
+            <p>AI-Powered Agricultural Assistant &copy; 2024</p>
+        </footer>
+
+    </div>
+</body>
+</html>
